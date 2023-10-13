@@ -1,0 +1,28 @@
+import asyncio
+import websockets
+
+async def handle_client(websocket, path):
+    try:
+        while True:
+            # Receive data from the client
+            client_message = await websocket.recv()
+            if not client_message:
+                break
+
+            print(f"Received from client: {client_message}")
+
+            # Server user types a response
+            server_response = input("Enter your response: ")
+
+            # Send the server response back to the client
+            await websocket.send(server_response)
+    except websockets.exceptions.ConnectionClosedError:
+        pass
+    finally:
+        print("Client disconnected")
+
+start_server = websockets.serve(handle_client, "0.0.0.0", 8765)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
+
